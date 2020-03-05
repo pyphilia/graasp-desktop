@@ -147,10 +147,7 @@ const mapDispatchToProps = {
   dispatchGetGeolocationEnabled: getGeolocationEnabled,
 };
 
-const ConnectedApp = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
 
 const TranslatedApp = withTranslation()(ConnectedApp);
 

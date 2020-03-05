@@ -4,7 +4,7 @@ import { POST_ACTION_CHANNEL } from '../config/channels';
 const postAction = async (
   {
     userId,
-    id: appInstanceId,
+    appInstanceId,
     spaceId,
     subSpaceId,
     format,
