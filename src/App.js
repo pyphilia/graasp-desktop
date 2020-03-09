@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Toolbar from '@material-ui/core/Toolbar';
 import { withTranslation } from 'react-i18next';
 import WifiIcon from '@material-ui/icons/Wifi';
 import WifiOffIcon from '@material-ui/icons/WifiOff';
@@ -24,6 +27,7 @@ import Authorization from './components/Authorization';
 import Classrooms from './components/classrooms/Classrooms';
 import ImportDataScreen from './components/classrooms/ImportDataScreen';
 import { OnlineTheme, OfflineTheme } from './themes';
+import logo from './data/icon.png';
 import {
   SETTINGS_PATH,
   SYNC_SPACE_PATH,
@@ -59,13 +63,20 @@ import {
 import './App.css';
 import SavedSpaces from './components/SavedSpaces';
 import ClassroomScreen from './components/classrooms/ClassroomScreen';
+import {
+  INSTALL_APP_UPGRADE_CHANNEL,
+  GET_APP_UPGRADE_CHANNEL,
+} from './config/channels';
+import Loader from './components/common/Loader';
+import Styles from './Styles';
 
 const styles = () => ({
+  ...Styles,
   toastrIcon: { marginBottom: '-20px', fontSize: '45px' },
 });
 
 export class App extends Component {
-  state = { height: 0 };
+  state = { height: 0, isUpgrading: false };
 
   static propTypes = {
     dispatchGetGeolocation: PropTypes.func.isRequired,
@@ -81,9 +92,11 @@ export class App extends Component {
     geolocationEnabled: PropTypes.bool.isRequired,
     classes: PropTypes.shape({
       toastrIcon: PropTypes.string.isRequired,
+      root: PropTypes.string.isRequired,
     }).isRequired,
     connexionStatus: PropTypes.bool.isRequired,
     userMode: PropTypes.oneOf(USER_MODES).isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -105,6 +118,7 @@ export class App extends Component {
     dispatchGetDeveloperMode();
     dispatchGetUserFolder();
     dispatchGetGeolocationEnabled();
+    this.checkAppUpgrade();
   }
 
   componentDidMount() {
@@ -138,6 +152,45 @@ export class App extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
+  checkAppUpgrade = () => {
+    const { t } = this.props;
+
+    // look for app upgrade
+    window.ipcRenderer.send(GET_APP_UPGRADE_CHANNEL);
+
+    const listener = (event, isUpgradeAvailable) => {
+      // if available, ask for download and install
+      if (isUpgradeAvailable) {
+        // eslint-disable-next-line no-new
+        new Notification(t('Graasp Desktop'), {
+          body: t('A new version is available'),
+          icon: logo,
+        });
+
+        const toastrConfirmOptions = {
+          icon: <img src={logo} alt="graasp logo" />,
+          okText: t('Accept'),
+          cancelText: t('Ask next time'),
+          onOk: () => {
+            this.setState({ isUpgrading: true });
+            window.ipcRenderer.send(INSTALL_APP_UPGRADE_CHANNEL, true);
+          },
+          onCancel: () =>
+            window.ipcRenderer.send(INSTALL_APP_UPGRADE_CHANNEL, false),
+        };
+        toastr.confirm(
+          t(
+            'A new version of Graasp Desktop is available. Do you want to quit the application and install it now?'
+          ),
+          toastrConfirmOptions
+        );
+      }
+
+      window.ipcRenderer.removeListener(GET_APP_UPGRADE_CHANNEL, listener);
+    };
+    window.ipcRenderer.once(GET_APP_UPGRADE_CHANNEL, listener);
+  };
+
   updateWindowDimensions = () => {
     this.setState({ height: window.innerHeight });
   };
@@ -157,8 +210,22 @@ export class App extends Component {
   };
 
   render() {
-    const { height } = this.state;
-    const { userMode, connexionStatus } = this.props;
+    const { height, isUpgrading } = this.state;
+    const { userMode, connexionStatus, classes } = this.props;
+
+    if (isUpgrading) {
+      return (
+        <div className={classes.root}>
+          <CssBaseline />
+          <AppBar position="fixed">
+            <Toolbar />
+          </AppBar>
+          <main className="Main">
+            <Loader />
+          </main>
+        </div>
+      );
+    }
 
     return (
       <MuiThemeProvider

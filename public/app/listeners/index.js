@@ -51,6 +51,7 @@ const setActionAccessibility = require('./setActionAccessibility');
 const setActionsAsEnabled = require('./setActionsAsEnabled');
 const windowAllClosed = require('./windowAllClosed');
 const postFile = require('./postFile');
+const { installAppUpgrade, getAppUpgrade } = require('./appUpgrade');
 
 module.exports = {
   loadSpace,
@@ -105,4 +106,6 @@ module.exports = {
   setActionsAsEnabled,
   windowAllClosed,
   postFile,
+  installAppUpgrade,
+  getAppUpgrade,
 };
