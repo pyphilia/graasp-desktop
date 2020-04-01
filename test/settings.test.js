@@ -37,7 +37,7 @@ import {
   DEFAULT_DEVELOPER_MODE,
 } from '../src/config/constants';
 import { userLogin } from './userLogin.test';
-import { USER_GRAASP } from './fixtures/credentials';
+import { USER_GRAASP } from './fixtures/users';
 
 describe('Settings Scenarios', function() {
   this.timeout(DEFAULT_GLOBAL_TIMEOUT);
