@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import ReduxToastr, { toastr } from 'react-redux-toastr';
+import { toastr } from 'react-redux-toastr';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
-import { MuiThemeProvider } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core';
 import { withTranslation } from 'react-i18next';
-import { Detector } from 'react-detect-offline';
 import WifiIcon from '@material-ui/icons/Wifi';
 import WifiOffIcon from '@material-ui/icons/WifiOff';
 import Home from './Home';
@@ -16,7 +14,6 @@ import Settings from './components/Settings';
 import LoadSpace from './components/LoadSpace';
 import SpaceScreen from './components/space/SpaceScreen';
 import DeveloperScreen from './components/developer/DeveloperScreen';
-import { OnlineTheme, OfflineTheme } from './themes';
 import Dashboard from './components/dashboard/Dashboard';
 import SignInScreen from './components/signin/SignInScreen';
 import Authorization from './components/Authorization';
@@ -69,6 +66,7 @@ export class App extends Component {
     classes: PropTypes.shape({
       toastrIcon: PropTypes.string.isRequired,
     }).isRequired,
+    connexionStatus: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -101,8 +99,9 @@ export class App extends Component {
     lang: prevLang,
     geolocationEnabled: prevGeolocationEnabled,
     dispatchGetGeolocation,
+    connexionStatus: prevConnexionStatus,
   }) {
-    const { lang, i18n, geolocationEnabled } = this.props;
+    const { lang, i18n, geolocationEnabled, connexionStatus } = this.props;
     if (lang !== prevLang) {
       i18n.changeLanguage(lang);
     }
@@ -110,6 +109,11 @@ export class App extends Component {
     // fetch geolocation only if enabled
     if (geolocationEnabled && geolocationEnabled !== prevGeolocationEnabled) {
       dispatchGetGeolocation();
+    }
+
+    // display toastr when connexion status changes
+    if (connexionStatus !== prevConnexionStatus) {
+      this.triggerConnectionToastr();
     }
   }
 
@@ -121,10 +125,10 @@ export class App extends Component {
     this.setState({ height: window.innerHeight });
   };
 
-  triggerConnectionToastr = online => {
-    const { classes } = this.props;
+  triggerConnectionToastr = () => {
+    const { classes, connexionStatus } = this.props;
 
-    if (online) {
+    if (connexionStatus) {
       toastr.light(CONNECTION_MESSAGE_HEADER, CONNECTION_ONLINE_MESSAGE, {
         icon: <WifiIcon className={classes.toastrIcon} />,
       });
@@ -139,67 +143,49 @@ export class App extends Component {
     const { height } = this.state;
 
     return (
-      <Detector
-        render={({ online }) => (
-          <MuiThemeProvider theme={online ? OnlineTheme : OfflineTheme}>
-            {this.triggerConnectionToastr(online)}
-            <div>
-              <ReduxToastr
-                transitionIn="fadeIn"
-                preventDuplicates
-                transitionOut="fadeOut"
-              />
-            </div>
-            <Router>
-              <div className="app" style={{ height }}>
-                <Switch>
-                  <Route exact path={SIGN_IN_PATH} component={SignInScreen} />
-                  <Route
-                    exact
-                    path={HOME_PATH}
-                    component={Authorization()(Home)}
-                  />
-                  <Route
-                    exact
-                    path={SPACES_NEARBY_PATH}
-                    component={Authorization()(SpacesNearby)}
-                  />
-                  <Route
-                    exact
-                    path={VISIT_PATH}
-                    component={Authorization()(VisitSpace)}
-                  />
-                  <Route
-                    exact
-                    path={LOAD_SPACE_PATH}
-                    component={Authorization()(LoadSpace)}
-                  />
-                  <Route
-                    exact
-                    path={SETTINGS_PATH}
-                    component={Authorization()(Settings)}
-                  />
-                  <Route
-                    exact
-                    path={SPACE_PATH}
-                    component={Authorization()(SpaceScreen)}
-                  />
-                  <Route
-                    exact
-                    path={DASHBOARD_PATH}
-                    component={Authorization()(Dashboard)}
-                  />
-                  <Route
-                    exact
-                    path={DEVELOPER_PATH}
-                    component={Authorization()(DeveloperScreen)}
-                  />
-                </Switch>
-              </div>
-            </Router>
-          </MuiThemeProvider>
-        )}
-      />
+      <Router>
+        <div className="app" style={{ height }}>
+          <Switch>
+            <Route exact path={SIGN_IN_PATH} component={SignInScreen} />
+            <Route exact path={HOME_PATH} component={Authorization()(Home)} />
+            <Route
+              exact
+              path={SPACES_NEARBY_PATH}
+              component={Authorization()(SpacesNearby)}
+            />
+            <Route
+              exact
+              path={VISIT_PATH}
+              component={Authorization()(VisitSpace)}
+            />
+            <Route
+              exact
+              path={LOAD_SPACE_PATH}
+              component={Authorization()(LoadSpace)}
+            />
+            <Route
+              exact
+              path={SETTINGS_PATH}
+              component={Authorization()(Settings)}
+            />
+            <Route
+              exact
+              path={SPACE_PATH}
+              component={Authorization()(SpaceScreen)}
+            />
+            <Route
+              exact
+              path={DASHBOARD_PATH}
+              component={Authorization()(Dashboard)}
+            />
+            <Route
+              exact
+              path={DEVELOPER_PATH}
+              component={Authorization()(DeveloperScreen)}
+            />
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }
