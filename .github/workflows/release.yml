@@ -8,7 +8,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest]
+        #, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -19,8 +20,11 @@ jobs:
         with:
           node-version: 12
 
+      - name: yarn
+        run: yarn install --network-timeout 1000000
+
       - name: Build/release Electron app
-        run: yarn build && electron-builder
+        run: yarn dist
         # with:
         #   # GitHub token, automatically provided to the action
         #   # (No need to define this secret in the repo settings)
