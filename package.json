@@ -35,7 +35,7 @@
     "pack": "electron-builder --dir",
     "prestart": "env-cmd -f ./.env.local node scripts/setup.js",
     "prebuild": "env-cmd -f ./.env node scripts/setup.js",
-    "predist": "yarn build:env",
+    "predist": "yarn build",
     "predist:win": "yarn build:env",
     "predist:mac": "yarn build:env",
     "predist:linux": "yarn build:env",
