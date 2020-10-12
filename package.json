@@ -1,6 +1,6 @@
 {
   "name": "graasp-desktop",
-  "version": "0.15.6",
+  "version": "0.15.8",
   "description": "Desktop application for the Graasp ecosystem.",
   "private": true,
   "author": "React EPFL",
@@ -180,7 +180,10 @@
       ],
       "category": "public.app-category.education",
       "publish": [
-        "github"
+        {
+          "provider": "github",
+          "releaseType": "release"
+        }
       ],
       "gatekeeperAssess": true
     },
@@ -193,7 +196,10 @@
       "target": "nsis",
       "icon": "assets/icon.ico",
       "publish": [
-        "github"
+        {
+          "provider": "github",
+          "releaseType": "release"
+        }
       ]
     },
     "linux": {
@@ -205,7 +211,10 @@
       "description": "Desktop application for the Graasp ecosystem.",
       "category": "Network;Feed",
       "publish": [
-        "github"
+        {
+          "provider": "github",
+          "releaseType": "release"
+        }
       ]
     }
   },

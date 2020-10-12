@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.8](https://github.com/graasp/graasp-desktop/compare/v0.15.6...v0.15.8) (2020-10-12)
+
+### [0.15.7](https://github.com/graasp/graasp-desktop/compare/v0.15.6...v0.15.7) (2020-10-12)
+
 ### [0.15.6](https://github.com/graasp/graasp-desktop/compare/v0.15.5...v0.15.6) (2020-09-30)
 
 ### Features
