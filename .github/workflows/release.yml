@@ -23,11 +23,11 @@ jobs:
       - name: yarn
         run: yarn install --network-timeout 1000000
 
-      - name: build
-        run: yarn build
-
       - name: bump tags
         run: yarn release:tags
+
+      - name: build
+        run: yarn build
 
       - name: Build/release Electron app
         # run: yarn dist
